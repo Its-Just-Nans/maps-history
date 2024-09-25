@@ -100,8 +100,10 @@ for year in os.listdir(sementic):
 
 
 path_records = os.path.join(path, "Records.json")
+print("Reading records from : ", path_records)
 with open(path_records, "r") as f:
     records = json.load(f)
+print("Number of records : ", len(records["locations"]))
 
 
 data_records = {}
@@ -133,7 +135,9 @@ for record in records["locations"]:
 
 
 def show_date(choosen_date):
+    data = {}
     if choosen_date in segments:
+        data["segments"] = segments[choosen_date]
         df = pd.DataFrame(segments[choosen_date])
         fig = px.line_map(df, lat="lat", lon="lon", color="color", text="text")
     else:
@@ -141,6 +145,7 @@ def show_date(choosen_date):
 
     fig.update_layout(title=choosen_date, map_zoom=3)
     if choosen_date in data_records:
+        data["records"] = data_records[choosen_date]
         fdd = pd.DataFrame(data_records[choosen_date])
         fig.add_trace(
             go.Scattermap(
@@ -152,6 +157,7 @@ def show_date(choosen_date):
         )
 
     if choosen_date in places:
+        data["places"] = places[choosen_date]
         df = pd.DataFrame(places[choosen_date])
         fig.add_trace(
             go.Scattermap(
@@ -163,6 +169,7 @@ def show_date(choosen_date):
         )
 
     fig.show()
+    return data
 
 
 # sort by date
@@ -179,5 +186,9 @@ all_dates.reverse()
 
 for key in all_dates:
     print("Date : ", key)
-    show_date(key)
-    input("Press Enter to continue...\n")
+    data = show_date(key)
+    i = input("Press Enter to continue or 'export'\n")
+    if i == "export":
+        with open(f"{key}.json", "w") as f:
+            json.dump(data, f)
+            print(f"Data exported to {key}.json")
