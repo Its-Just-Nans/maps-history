@@ -18,5 +18,3 @@ In google maps export, there are 3 types of data:
 - places
 - journeys
 - segments
-
-Related to : <https://thoughts.n4n5.dev/google-maps-export/>
